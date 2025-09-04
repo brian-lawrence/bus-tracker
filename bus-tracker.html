@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Bus Tracker - Tracker Phone</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>body { font-family: Arial, sans-serif; padding: 2em; }</style>
+  </head>
+  <body>
+    <h2>This phone tracks the bus</h2>
+    <label>Bus name: <input id="busName" value="School Bus" /></label>
+    <br><br>
+    <button onclick="startTracking()">Start Tracking</button>
+    <p id="status"></p>
+
+    <script>
+      // Paste the Firebase config that you copied in Step 3 here
+      const firebaseConfig = {
+        apiKey: "AIzaSyB1UVF1dEjA5B4tE3vi_s21IL1u-uPc51k",
+        authDomain: "bus-tracking-9a279.firebaseapp.com",
+        projectId: "bus-tracking-9a279",
+        storageBucket: "bus-tracking-9a279.firebasestorage.app",
+        messagingSenderId: "633252168555",
+        appId: "1:633252168555:web:c1d1338ac090ae0e60422e"
+        };
+
+
+
+      // Initialize Firebase
+      firebase.initializeApp(firebaseConfig);
+      const db = firebase.database();
+
+      function startTracking() {
+        const busName = document.getElementById('busName').value || "School Bus";
+        document.getElementById('status').innerText = 'Tracking started...';
+
+        if (!navigator.geolocation) {
+          alert("Geolocation is not supported by your browser");
+          return;
+        }
+
+        navigator.geolocation.watchPosition(function(position) {
+          db.ref('buses/' + busName).set({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+            name: busName
+          });
+          document.getElementById('status').innerText = `Updated location: ${position.coords.latitude.toFixed(5)}, ${position.coords.longitude.toFixed(5)}`;
+        }, function(error) {
+          alert("Error getting location: " + error.message);
+        }, { enableHighAccuracy: true });
+      }
+    </script>
+  </body>
+</html>
